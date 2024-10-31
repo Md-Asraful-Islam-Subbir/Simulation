@@ -1,0 +1,594 @@
+10_Manufasting
+ 
+Ans:
+import random  # র‍্যান্ডম সংখ্যা উৎপন্ন করার জন্য random মডিউলটি ইম্পোর্ট করা হয়েছে
+
+class ManufacturingSystem:  
+    def __init__(self, run_time, arrival_rate, processing_time, inspection_time, defect_rate):
+        # ManufacturingSystem ক্লাসের জন্য কন্সট্রাক্টর ফাংশন; এটি বিভিন্ন প্যারামিটার গ্রহণ করে
+        self.run_time = run_time  # মোট কত সময় ধরে সিমুলেশন চলবে সেটি নির্ধারণ করে
+        self.arrival_rate = arrival_rate  # কত সময় পর পর কাঁচামাল আসবে তা নির্ধারণ করে
+        self.processing_time = processing_time  # প্রতিটি প্রোডাক্ট প্রসেস করতে কত সময় লাগবে তা নির্ধারণ করে
+        self.inspection_time = inspection_time  # প্রতিটি প্রোডাক্ট ইন্সপেক্ট করতে কত সময় লাগবে তা নির্ধারণ করে
+        self.defect_rate = defect_rate  # প্রোডাক্টে সমস্যা থাকার সম্ভাবনার হার নির্ধারণ করে
+        self.time = 0  # সিমুলেশনের চলমান সময়
+        self.raw_materials = 0  # কাঁচামালের মজুদ সংখ্যা
+        self.products_completed = 0  # মোট কতগুলো প্রোডাক্ট তৈরি হয়েছে তার সংখ্যা
+        self.products_passed_inspection = 0  # ইন্সপেকশন পাস করা প্রোডাক্টের সংখ্যা
+        self.products_failed_inspection = 0  # ইন্সপেকশনে ফেল করা প্রোডাক্টের সংখ্যা
+
+    def run_simulation(self):  
+        while self.time < self.run_time:  # চলমান সময় যতক্ষণ রান টাইমের কম থাকবে ততক্ষণ লুপ চলবে
+            # Step 1: কাঁচামাল সংগ্রহ
+            if self.time % self.arrival_rate == 0:
+                self.raw_materials += 1  # কাঁচামালের সংখ্যা ১ বৃদ্ধি করা হয়
+                print(f"Time {self.time}: Raw material received. Total raw materials: {self.raw_materials}")
+
+            # Step 2: কাঁচামাল থেকে প্রোডাক্ট তৈরি করা (যদি কাঁচামাল মজুদ থাকে)
+            if self.raw_materials > 0:
+                processing_end_time = self.time + self.processing_time  # প্রোডাক্ট প্রসেসিংয়ের শেষ সময় নির্ধারণ
+                if processing_end_time <= self.run_time:
+                    self.raw_materials -= 1  # কাঁচামালের সংখ্যা ১ হ্রাস করা হয়
+                    self.products_completed += 1  # প্রোডাক্ট সংখ্যা ১ বৃদ্ধি করা হয়
+                    print(f"Time {self.time}: Processing product. Total products completed: {self.products_completed}")
+                self.time += self.processing_time  # প্রসেসিং সময় শেষে সময় বাড়ানো হয়
+            else:
+                # কাঁচামাল না থাকলে পরবর্তী সময়ের জন্য অপেক্ষা করা হয়
+                self.time += 1
+                continue
+
+            # Step 3: প্রস্তুত প্রোডাক্ট ইন্সপেকশন করা
+            inspection_end_time = self.time + self.inspection_time  # ইন্সপেকশনের শেষ সময় নির্ধারণ
+            if inspection_end_time <= self.run_time:
+                # ডিফেক্ট রেট অনুযায়ী ইন্সপেকশন পাশ বা ফেল নির্ধারণ
+                if random.random() > self.defect_rate:
+                    self.products_passed_inspection += 1  # পাশ করা প্রোডাক্টের সংখ্যা ১ বৃদ্ধি
+                    print(f"Time {self.time}: Product passed inspection.")
+                else:
+                    self.products_failed_inspection += 1  # ফেল করা প্রোডাক্টের সংখ্যা ১ বৃদ্ধি
+                    print(f"Time {self.time}: Product failed inspection.")
+                self.time += self.inspection_time  # ইন্সপেকশন শেষে সময় বাড়ানো হয়
+            else:
+                # ইন্সপেকশন সময় রান টাইমের বেশি হলে সিমুলেশন শেষ
+                break
+
+        # সিমুলেশন শেষ হলে ফলাফল প্রদর্শন
+        print("\nSimulation Results:")
+        print(f"Total products completed: {self.products_completed}")
+        print(f"Total products passed inspection: {self.products_passed_inspection}")
+        print(f"Total products failed inspection: {self.products_failed_inspection}")
+
+# সিমুলেশন প্যারামিটার
+run_time = 100  # সিমুলেশনের মোট সময়
+arrival_rate = 5  # কত সময় পর পর কাঁচামাল আসবে
+processing_time = 4  # প্রতিটি প্রোডাক্ট প্রসেস করতে কত সময় লাগবে
+inspection_time = 2  # প্রতিটি প্রোডাক্ট ইন্সপেক্ট করতে কত সময় লাগবে
+defect_rate = 0.1  # প্রোডাক্টে সমস্যা থাকার সম্ভাবনার হার
+
+# সিমুলেশন চালু
+system = ManufacturingSystem(run_time, arrival_rate, processing_time, inspection_time, defect_rate)
+system.run_simulation()
+
+--------------------------------------------------------------------
+10.Maintainenece
+
+Ans:
+#এই কোডটি একটি সিমুলেশন যেখানে দুটি আলাদা নীতির অধীনে একটি নির্দিষ্ট ঘটনার সময়কাল এবং খরচ বিশ্লেষণ করা হয়
+import random  # Import the random module to generate random numbers
+
+RANDOM_SEED = 12345  # Seed value for random number generation
+
+def main():
+    week = 1  # Unused variable, can be removed
+    t_values = [0] * 10  # যার প্রতিটি আইটেম 0 মান দিয়ে ইনিশিয়ালাইজ করা হয়েছে এবং এতে মোট ১০টি আইটেম রয়েছে।
+    occurrence_count = 0  #  একটি ভেরিয়েবল তৈরি করা হয়েছে এবং এতে 0 মান সেট করা হয়েছে, যা ঘটনার সংখ্যা গণনা করতে ব্যবহৃত হবে।
+    kont_counter = 0   # Initialize another counter to 0
+    current_time = 0  # Iযা বর্তমান সময়ের প্রতিনিধিত্ব করে।
+    run_limit = 20000  #  সিমুলেশনের সময়সীমা নির্দেশ করে।
+    cost_present_policy = 0   # বর্তমান নীতির জন্য খরচ নির্দেশ করে।
+    cost_proposed_policy = 0   # প্রস্তাবিত নীতির জন্য খরচ নির্দেশ করে।
+
+    random.seed(RANDOM_SEED)  # Seed the random number generator for reproducibility
+
+    # একটি for লুপ শুরু করা হয়েছে যা i এর মান 1 থেকে 4 পর্যন্ত ইন্টারেট করবে
+    for i in range(1, 5):
+        random_value = random.random()  # Generate a random number between 0 and 1
+        random_value = round(random_value, 6)      #  ভেরিয়েবলের মানটি ৬ দশমিক স্থানে রাউন্ড করা হয়েছে।
+        t_values[i] = int(1000 + random_value * 1000)  # random_value কে 1000 থেকে 2000 এর মধ্যে রূপান্তরিত করা হয়েছে এবং সেই মানটি t_values তালিকার i তম ইনডেক্সে সেট করা হয়েছে।
+        print(f"{t_values[i]:>8}", end=" ")  # মানটি ৮ চওড়ার স্পেসের মধ্যে ডানদিকে সজ্জিত করে প্রিন্ট করা হয়েছে
+
+    # একটি টেবিলের শিরোনাম প্রিন্ট করা হয়েছে, যেখানে প্রতিটি কলাম CLOCK, T1, T2, T3, T4 এবং COUNT প্রতিনিধিত্ব করে।
+    print("\n {:>5} {:>5} {:>5} {:>5} {:>5} {:>5}".format("CLOCK", "T1", "T2", "T3", "T4", "COUNT"))
+
+    # Simulation loop: While the clock time is within the run limit
+    while current_time <= run_limit:
+        # Print the current clock time and T values
+        print(f"\n {current_time:>5} {t_values[1]:>5} {t_values[2]:>5} {t_values[3]:>5} {t_values[4]:>5} {occurrence_count:>5}")
+
+        # Find the smallest T value and its index
+        smallest_value = 999999
+        smallest_index = 0
+        for i in range(1, 5):
+            if t_values[i] < smallest_value:
+                smallest_value = t_values[i]
+                smallest_index = i
+
+        # Subtract the smallest value from all T values
+        for i in range(1, 5):
+            t_values[i] -= smallest_value
+
+        # Generate a new random number and update the T value with the smallest index
+        random_value = random.random()
+        random_value = round(random_value, 6)
+        t_values[smallest_index] = int(1000 + random_value * 1000)
+
+        # Update the clock time and increment the occurrence count
+        current_time += smallest_value
+        occurrence_count += 1
+
+    # Proposed policy simulation loop: Reset counters and seed for a new simulation
+    current_time = 0
+    kont_counter = 0
+    random.seed(RANDOM_SEED)
+
+    # Print a header for the proposed policy table
+    print("\n {:>5} {:>5} {:>5} {:>5} {:>5} {:>5}".format("CLOCK", "T1", "T2", "T3", "T4", "KONT"))
+
+    # Similar simulation loop for the proposed policy
+    while current_time <= run_limit:
+        # Generate new random numbers for each T value
+        for i in range(1, 5):
+            random_value = random.random()
+            random_value = round(random_value, 6)
+            t_values[i] = int(1000 + random_value * 1000)
+
+        # Print the current clock time and T values
+        print(f"\n {current_time:>5} {t_values[1]:>5} {t_values[2]:>5} {t_values[3]:>5} {t_values[4]:>5} {kont_counter:>5}")
+
+        # Find the smallest T value
+        smallest_value = 999999
+        for i in range(1, 5):
+            if t_values[i] < smallest_value:
+                smallest_value = t_values[i]
+
+        # Update the clock time and increment the kont counter
+        current_time += smallest_value
+        kont_counter += 1
+
+    # Calculate costs for both policies
+    cost_present_policy = occurrence_count * (200 + 100)
+    cost_proposed_policy = kont_counter * 2 * 200 + kont_counter * 4 * 100
+
+    # Print the calculated costs for both policies
+    print(f"\nCost Present policy  = {cost_present_policy}\nCost proposed policy = {cost_proposed_policy}")
+
+if __name__ == "__main__":
+    main()
+
+-------------------------------------------------------------------------
+10.Profit Analysis
+
+Ans:
+
+#ই কোডটি একটি প্রফিট এনালাইসিস সিমুলেশন, যেখানে বিভিন্ন পরিস্থিতিতে কোম্পানির লাভ বা ক্ষতির সম্ভাবনা নির্ণয় করা হয়
+import random
+
+# Profit Analysis Problem
+# fc = Fixed cost.
+# sp = Selling price.
+# Variable cost is between vc_lower_limit and vc_upper_limit.
+# If the reaction of the opponent is strong, sales could be sale_lower_limit to sale_upper_limit_strong,
+# and if the reaction is weak, the sales could be sale_lower_limit to sale_upper_limit_weak.
+# csr = Chances of a strong reaction.
+
+# Input the number of simulation runs
+num_runs = int(input("Enter the number of simulation runs: "))
+
+# Iলাভ এবং ক্ষতির ট্র্যাকিংয়ের জন্য দুটি কাউন্টার ইনিশিয়ালাইজ করা হয়েছে।
+loss_count = 0
+profit_count = 0
+
+# Given constants and parameters
+fixed_cost = 60000  # Fixed cost
+selling_price = 10  # Selling price
+csr = 0.6           # Chances of strong reaction
+vc_lower_limit = 4.5  # Variable cost lower limit
+vc_upper_limit = 5.5  # Variable cost upper limit
+sale_lower_limit = 10000  # Lower limit of sales
+sale_upper_limit_strong = 12000  # Upper limit of sales for strong reaction
+sale_lower_limit_weak = 13000   # Lower limit of sales for weak reaction
+sale_upper_limit_weak = 15000   # Upper limit of sales for weak reaction
+
+# Loop for performing the simulation for 'num_runs' runs
+for run in range(1, num_runs + 1):
+    # একটি র্যান্ডম ভেরিয়েবল কস্ট নির্ধারণ করা হচ্ছে। প্রথমে variable_cost_adjustment হিসেবে ০ থেকে ১ এর মধ্যে একটি র্যান্ডম মান তৈরি করা হয় এবং এটিকে সীমার মধ্যে স্কেল করা হয়।
+    variable_cost_adjustment = round(random.uniform(0, 1), 2)
+    # Calculate the adjusted variable cost
+    variable_cost = vc_lower_limit + variable_cost_adjustment * (vc_upper_limit - vc_lower_limit)
+    
+    # প্রতিক্রিয়ার শক্তি নির্ধারণে আবার ০ থেকে ১ এর মধ্যে একটি র্যান্ডম মান তৈরি করা হয়
+    reaction_strength = round(random.uniform(0, 1), 2)
+    # প্রতিক্রিয়ার শক্তি csr এর সমান বা কম হলে, demand (চাহিদা) sale_lower_limit থেকে sale_upper_limit_strong সীমার মধ্যে সেট করা হয়। অন্যথায়, demand সেট করা হয় sale_lower_limit_weak থেকে sale_upper_limit_weak এর মধ্যে।
+    if reaction_strength <= csr:
+        demand = sale_lower_limit + reaction_strength * (sale_upper_limit_strong - sale_lower_limit)
+    else:
+        demand = sale_lower_limit_weak + reaction_strength * (sale_upper_limit_weak - sale_lower_limit_weak)
+    
+    # মোট লাভ বা ক্ষতি নির্ধারণে চাহিদা, বিক্রয়মূল্য, ভেরিয়েবল কস্ট এবং স্থির খরচ ব্যবহার করা হয়।
+    profit = demand * (selling_price - variable_cost) - fixed_cost
+
+    # যদি লাভ বা ক্ষতি -৫০০০ এর কম হয়, তাহলে এটি ক্ষতি হিসেবে গোনা হয় এবং loss_count এক দ্বারা বৃদ্ধি করা হয়।
+    if profit < -5000:
+        loss_count += 1
+    
+    # Check if the profit is greater than 5000 (indicating a profit)
+    if profit > 5000:
+        profit_count += 1
+
+# মোট সিমুলেশন রান সংখ্যা এবং লাভ ও ক্ষতির সম্ভাবনা শতাংশ হিসেবে প্রিন্ট করা হয়
+print("\nNumber of simulation runs =", num_runs)
+print("Probability of LOSS being greater than 5000 =", loss_count * 100 / num_runs)
+print("Probability of PROFIT being greater than 5000 =", profit_count * 100 / num_runs)
+
+-----------------------------------------------------
+10. Counter Service
+
+Ans:
+
+import random
+
+# Seed for random number generation
+RANDOM_SEED = 12345
+
+def main():
+    # Define the number of interarrival values, service values, and servers
+    num_interarrival_values = 6
+    num_service_values = 5
+    num_servers = 4
+    
+    # Define cumulative probabilities and arrays for interarrival and service times
+    cumulative_prob_interarrival = [0, 0.05, 0.4, 0.65, 0.80, 0.90, 0.97, 1.0]
+    interarrival_times = [0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0]
+    cumulative_prob_service = [0, 0.05, 0.3, 0.65, 0.85, 1, 0]
+    service_times = [1, 2, 3, 4, 5]
+    
+    # Initialize a list to store service ending times for each server
+    service_ending_times = [0.0] * 10
+    
+    # Get user input for the number of runs
+    num_runs = int(input("Enter the value of num_runs: "))
+
+    #  ২ থেকে num_servers পর্যন্ত বিভিন্ন সংখ্যার সার্ভার নিয়ে লুপ চালানো হয়।
+    for num_bearers in range(2, num_servers + 1):
+        # Print header for the current number of servers
+        print("\nRun Length\tAverage Waiting time for S={}".format(num_bearers))
+        
+        # ০ থেকে ৫০০ পর্যন্ত ভিন্ন রান লেন্থ অনুযায়ী লুপ চালানো হয়।Loop through different run lengths
+        for run_length in range(50, 501, 100):
+            # Initialize the variable to store the average waiting time
+            avg_waiting_time = 0.0
+            
+            # প্রতিটি রান শুরুর আগে র্যান্ডম সিড সেট করা হয়।
+            for iteration in range(1, num_runs + 1):
+                # Set the random seed for reproducibility
+                random.seed(RANDOM_SEED)
+                
+                # Initialize the variables for the current simulation run
+                arrival_counter = 0
+                next_arrival_time = 0.0
+                cumulative_waiting_time = 0.0
+                
+                # প্রতিটি সার্ভারের জন্য সার্ভিসের শেষের সময় 0.0 তে সেট করা হয়
+                for i in range(1, num_bearers + 1):
+                    service_ending_times[i] = 0.0
+
+                # Run the simulation for the prescribed length of run
+                for arrival_counter in range(1, run_length + 1):
+                    # ই পদ্ধতিতে সার্ভিস টাইম নির্ধারণ করা হয়।
+                    random_value_old = random.random()
+                    random_value = round(random_value_old, 6)
+                    for i in range(num_interarrival_values + 1):
+                        if cumulative_prob_interarrival[i] < random_value <= cumulative_prob_interarrival[i + 1]:
+                            interarrival_time = interarrival_times[i]
+                    random_value_old = random.random()
+                    random_value = round(random_value_old, 6)
+                    for i in range(num_service_values + 1):
+                        if cumulative_prob_service[i] < random_value <= cumulative_prob_service[i + 1]:
+                            service_time = service_times[i]
+
+                    # Update the next arrival time
+                    next_arrival_time += interarrival_time
+
+                    #  কোন সার্ভার আগের সার্ভিসটি আগে শেষ করবে তা খুঁজে বের করা হয়।
+                    min_ending_time = 99.9
+                    waiting_time = 0
+                    for i in range(1, num_bearers + 1):
+                        if service_ending_times[i] <= min_ending_time:
+                            min_ending_time = service_ending_times[i]
+                            chosen_bearer = i
+                            #যদি নতুন আগমনটি আগের সার্ভিস শেষে হয়, তাহলে অপেক্ষার সময় নির্ধারণ করা হয় এবং সার্ভিসের সমাপ্তি সময় আপডেট করা হয়।
+                    if next_arrival_time <= min_ending_time:
+                        service_ending_times[chosen_bearer] = min_ending_time + service_time
+                        waiting_time = min_ending_time - next_arrival_time
+                    else:
+                        service_ending_times[chosen_bearer] = next_arrival_time + service_time
+
+                    # Accumulate waiting time
+                    cumulative_waiting_time += waiting_time
+
+                # Calculate average waiting time for the current run and accumulate it
+                avg_waiting_time += cumulative_waiting_time / run_length
+
+            # Print the average waiting time for the current run length and number of servers
+            print("{}\t\t{:8.2f}".format(run_length, avg_waiting_time / num_runs))
+
+if __name__ == "__main__":
+    main()
+
+------------------------------------------------------------------------------------
+10. Inventry
+
+Ans:
+
+# simulate an inventory system with the objective to determine the
+# re-order combination (P,Q) which yields the highest service level 
+# for a given value of average stock.
+
+import random
+def main():
+    # Initialize variables
+    current_day = 1       # Counter for the current day
+    current_stock = 100   # Current stock level
+    cumulative_stock = 0  # Cumulative stock over days
+    pending_order = 0     # Quantity of items pending in an order
+    order_arrival_days = 0  # Days until the arrival of an order
+    daily_demand = 0      # Demand for the current day
+    cumulative_demand = 0 # Cumulative demand over days
+    shortage_quantity = 0 # Quantity of shortages
+    cumulative_shortage = 0 # Cumulative shortages over days
+    reorder_point = 10   # Reorder point
+    reorder_quantity = 15 # Reorder quantity
+    lead_time = 3         # Lead time
+    
+    # Input: Length of simulation run (in days)
+    simulation_days = int(input("\n Length of simulation run (tdays) = "))
+    
+    # Print initial parameter values
+    print("\n Initial stock =", current_stock)
+    print(" Lead time =", lead_time)
+    print(" Reorder point =", reorder_point)
+    print(" Reorder quantity =", reorder_quantity)
+    
+    # Simulation loop
+    while current_day <= simulation_days:
+        # Update stock based on daily demand
+        current_stock = current_stock - daily_demand
+        if current_stock <= 0:
+            current_stock = 0
+        
+        # Handle the arrival of a pending order
+        if order_arrival_days == 0:
+            current_stock = current_stock + pending_order
+            pending_order = 0
+        
+        # Update cumulative stock
+        cumulative_stock = cumulative_stock + current_stock
+        
+        # Place a new order if stock is below the reorder point
+        if pending_order == 0:
+            if current_stock <= reorder_point:
+                pending_order = reorder_quantity
+                order_arrival_days = lead_time
+        
+        # Generate random daily demand
+        random_value = random.random()
+        if random_value <= 0.20:
+            daily_demand = 3
+        elif 0.20 < random_value <= 0.50:
+            daily_demand = 4
+        elif 0.50 < random_value <= 0.85:
+            daily_demand = 5
+        else:
+            daily_demand = 6
+        
+        # Update cumulative demand
+        cumulative_demand += daily_demand
+        
+        # Calculate shortage and update cumulative shortages
+        if daily_demand > current_stock:
+            shortage_quantity = daily_demand - current_stock
+        else:
+            shortage_quantity = 0
+        cumulative_shortage += shortage_quantity
+        
+        # Decrement days until order arrival
+        if order_arrival_days > 0:
+            order_arrival_days = order_arrival_days - 1
+        
+        # Move to the next day
+        current_day += 1
+    
+    # Calculate and print results
+    service_level = (cumulative_demand - cumulative_shortage) * 100.0 / cumulative_demand
+    average_stock = cumulative_stock / simulation_days
+    print("\n Average stock = {:.2f} units, service level = {:.2f} %".format(average_stock, service_level))
+
+if __name__ == "__main__":
+    main()
+
+-------------------------------------------------------------------------------------
+10.Pure Persuit
+
+Ans:
+
+import math
+time_limit = 12.0
+
+fighter_x = [0] * 16
+fighter_y = [0] * 16
+fighter_z = [0] * 16
+dist = 0
+s = 20.0  # fighter speed = s km/min
+fighter_x[0] = 0
+fighter_y[0] = 50.0
+fighter_z[0] = 0
+bomber_x = [100, 110, 120, 129, 140, 149, 158, 168, 179, 188, 198, 209, 219, 226, 234, 240]
+bomber_y = [0, 3, 6, 10, 15, 20, 26, 32, 37, 34, 30, 27, 23, 19, 16, 14]
+bomber_z = [0, 31, 16, 18, 25, 26, 46, 22, 34, 24, 32, 17, 27, 12, 18, 24]
+firing_range =  15 # (km) firing range of the fighter
+# check if the input data for the bomber and fighter positions have the same length
+if len(fighter_x) != len(bomber_x) or len(fighter_x) != len(bomber_y) or len(fighter_x) != len(bomber_z):
+    print("Error: Input data has different lengths.")
+    # checks if the bomber is moving too fast for the fighter to catch up
+for i in range(len(bomber_x) - 1):
+    distance_between_bomber_positions = math.sqrt((bomber_x[i+1] - bomber_x[i])**2 + (bomber_y[i+1] - bomber_y[i])**2 + (bomber_z[i+1] - bomber_z[i])**2)
+    time_between_bomber_positions = distance_between_bomber_positions / s
+    if time_between_bomber_positions > time_limit:
+        print(f"Error: Bomber moves too fast for fighter to catch up. Time between positions {i} and {i+1} is {time_between_bomber_positions:.2f} minutes.")
+        exit()
+
+for t in range(int(time_limit)):
+    dist = math.sqrt((bomber_y[t]-fighter_y[t])**2 + (bomber_x[t]-fighter_x[t])**2 + (bomber_z[t]-fighter_z[t])**2)
+    print(f"\n{t}, {dist}")
+    if t > time_limit:
+        print("Target escapes")
+        exit()
+    if dist <= firing_range:
+        break
+    else:
+        fighter_x[t+1] = fighter_x[t] + s * ((bomber_x[t] - fighter_x[t])/dist)
+        fighter_y[t+1] = fighter_y[t] + s * ((bomber_y[t] - fighter_y[t])/dist)
+        fighter_z[t+1] = fighter_z[t] + s * ((bomber_z[t] - fighter_z[t])/dist)
+
+print(f"\nPursuit ends, shot at {t} minutes and at {dist:.2f} km/s.")
+
+-------------------------------------------------------------------------------
+10.autocorrelation with chi
+
+Ans:
+
+import numpy as np
+from scipy.stats import chisquare
+
+# Function to generate random numbers using the Arithmetic Congruential Method
+def arithmetic_congruential_generator(seed, a, c, m, n):
+    random_numbers = []
+    x = seed
+    for i in range(n):
+        x = (a * x + c) % m
+        random_num = x / m  # Normalize to range [0,1)
+        random_numbers.append(random_num)
+        print(f"Step {i+1}: X = {x}, Random Number = {random_num}")  # Show each random number
+    return random_numbers
+
+# Function to calculate auto-correlation
+def auto_correlation_test(random_numbers, lag):
+    n = len(random_numbers)
+    observed_pairs = 0
+    for i in range(n - lag):
+        if (random_numbers[i] < 0.5) == (random_numbers[i + lag] < 0.5):
+            observed_pairs += 1
+    observed_freq = observed_pairs
+    expected_freq = (n - lag) * 0.5  # Expected frequency under independence assumption
+    return observed_freq, expected_freq
+
+# Parameters for the generator
+seed = 123  # Seed value
+a = 1103515245  # Multiplier
+c = 12345  # Increment
+m = 2**31  # Modulus
+n = 20  # Number of random numbers to generate (small for detailed output)
+
+# Generate random numbers
+print("Generating Random Numbers:")
+random_numbers = arithmetic_congruential_generator(seed, a, c, m, n)
+
+print("\nGenerated Random Numbers:", random_numbers)
+
+# Auto-correlation test with Chi-Square for lag=1
+lag = 1
+observed_freq, expected_freq = auto_correlation_test(random_numbers, lag)
+
+# Display observed and expected frequencies
+print("\nAuto-Correlation Test:")
+print(f"Observed Frequency of same half for lag={lag}:", observed_freq)
+print(f"Expected Frequency for lag={lag}:", expected_freq)
+
+# Perform Chi-Square Test
+chi_square_stat = (observed_freq - expected_freq) ** 2 / expected_freq
+print("\nChi-Square Statistic (Auto-Correlation Test):", chi_square_stat)
+
+# Interpretation of the result
+# Degrees of freedom for chi-square with binary outcome is 1
+p_value = chisquare([observed_freq, n - observed_freq], [expected_freq, n - expected_freq])[1]
+print("P-Value:", p_value)
+
+# Conclude based on p-value
+if p_value > 0.05:
+    print("Conclusion: The sequence shows no significant auto-correlation (fail to reject H0).")
+else:
+    print("Conclusion: The sequence shows significant auto-correlation (reject H0).")
+
+-------------------------------------------------------------------------------------------------------------
+10.mixed congruential and chi test
+
+Ans:
+import numpy as np
+from scipy.stats import chisquare
+
+# Function to generate mixed congruential random numbers
+def mixed_congruential_generator(seed, a, c, m, n):
+    random_numbers = []
+    x = seed
+    for i in range(n):
+        x = (a * x + c) % m
+        random_num = x / m  # Normalize to range [0,1)
+        random_numbers.append(random_num)
+        print(f"Step {i+1}: X = {x}, Random Number = {random_num}")  # Show each random number
+    return random_numbers
+
+# Parameters for the generator
+seed = 123  # Seed value
+a = 1103515245  # Multiplier
+c = 12345  # Increment
+m = 2**31  # Modulus
+n = 20  # Number of random numbers to generate (small for detailed output)
+
+# Generate random numbers
+print("Generating Random Numbers:")
+random_numbers = mixed_congruential_generator(seed, a, c, m, n)
+
+print("\nGenerated Random Numbers:", random_numbers)
+
+# Perform Chi-Square Test for uniformity
+print("\nChi-Square Test for Uniformity:")
+# Define the number of bins (e.g., 10)
+num_bins = 10
+observed_freq, bins = np.histogram(random_numbers, bins=num_bins, range=(0, 1))
+print("Observed Frequencies:", observed_freq)
+
+# Expected frequency for each bin
+expected_freq = [n / num_bins] * num_bins
+print("Expected Frequencies:", expected_freq)
+
+# Show each step of chi-square calculation
+chi_square_values = [(obs - exp) ** 2 / exp for obs, exp in zip(observed_freq, expected_freq)]
+for i, (obs, exp, chi_val) in enumerate(zip(observed_freq, expected_freq, chi_square_values), 1):
+    print(f"Bin {i}: Observed = {obs}, Expected = {exp}, Chi-Square Value = {chi_val}")
+
+# Total Chi-Square Statistic
+chi_square_stat = sum(chi_square_values)
+print("Chi-Square Statistic (Manual Calculation):", chi_square_stat)
+
+# Calculate the p-value using scipy's chisquare function
+chi_square_stat, p_value = chisquare(observed_freq, expected_freq)
+
+print("\nFinal Chi-Square Statistic (Using Scipy):", chi_square_stat)
+print("P-Value:", p_value)
+
+# Interpretation of results
+if p_value > 0.05:
+    print("Conclusion: The numbers are uniformly distributed (fail to reject H0).")
+else:
+    print("Conclusion: The numbers are not uniformly distributed (reject H0).")
+
